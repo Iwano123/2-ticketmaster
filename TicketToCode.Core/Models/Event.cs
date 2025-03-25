@@ -8,6 +8,7 @@ public class Event
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public int MaxAttendees { get; set; }
+    public int AvailableTickets { get; set; }
 }
 
 public enum EventType

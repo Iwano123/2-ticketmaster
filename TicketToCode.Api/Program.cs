@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using TicketToCode.Api.Endpoints;
 using TicketToCode.Api.Services;
 using TicketToCode.Core.Data;
@@ -44,6 +45,10 @@ app.UseAuthorization();
 
 // Map all endpoints
 app.MapEndpoints<Program>();
+app.MapBookingEndpoints();
+
+
+
 
 app.Run();
 

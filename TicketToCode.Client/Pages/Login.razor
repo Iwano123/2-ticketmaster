@@ -3,6 +3,7 @@
 @inject TicketToCode.Client.Services.UserState UserState
 @inject NavigationManager Navigation
 @using System.Net.Http.Json
+
 <div class="container my-4" style="max-width: 400px;">
     <h1>Login</h1>
     <div class="mb-3">
@@ -16,7 +17,7 @@
     <button class="btn btn-primary" @onclick="LoginUser">Login</button>
     @if (!string.IsNullOrEmpty(message))
     {
-        <div class="alert alert-danger mt-3" role="alert">@message</div>
+        <div class="alert alert-danger mt-3">@message</div>
     }
 </div>
 
@@ -34,7 +35,7 @@
             {
                 UserState.Username = result.Username;
                 UserState.Role = result.Role;
-                UserState.UserId = 1; // Demovärde
+                UserState.UserId = 1; // Exempelvärde
                 Navigation.NavigateTo("/");
             }
         }

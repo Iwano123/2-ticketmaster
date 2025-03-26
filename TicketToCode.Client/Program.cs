@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using TicketToCode.Client;
 
 namespace TicketToCode.Client
 {
@@ -11,7 +10,7 @@ namespace TicketToCode.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            // Om du vill peka mot en API-adress, ändra BaseAddress här.
+            // Peka mot ditt API
             builder.Services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri("https://localhost:7206/")

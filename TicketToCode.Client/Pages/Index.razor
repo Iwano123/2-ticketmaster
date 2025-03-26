@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject HttpClient Http
-
+@using System.Net.Http.Json
 <div class="container my-4">
     <h1>Kommande Evenemang</h1>
 
@@ -17,10 +17,8 @@
         <div class="list-group">
             @foreach (var evt in events)
             {
-                <a class="list-group-item list-group-item-action"
-                   href="@($"/eventdetails/{evt.Id}")">
-                    <strong>@evt.Name</strong> –
-                    <span class="text-muted">@evt.Start.ToString("g")</span>
+                <a class="list-group-item list-group-item-action" href="@($"/eventdetails/{evt.Id}")">
+                    <strong>@evt.Name</strong> - <span class="text-muted">@evt.Start.ToString("g")</span>
                 </a>
             }
         </div>
@@ -32,7 +30,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // GET /events (om ditt API är på https://localhost:7206/events)
+        // Hämtar data från /events (se till att API:t returnerar rätt data)
         events = await Http.GetFromJsonAsync<List<EventResponse>>("events");
     }
 
@@ -41,6 +39,6 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime Start { get; set; }
-        // ... fler propertys om du vill
+        // Lägg till fler propertys om nödvändigt
     }
 }

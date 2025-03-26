@@ -1,20 +1,16 @@
 ﻿@page "/logout"
 @inject TicketToCode.Client.Services.UserState UserState
 @inject NavigationManager Navigation
-@using System.Net.Http.Json
-<div class="container my-4">
-    <div class="alert alert-info" role="alert">
-        Logging out...
-    </div>
+
+<div class="container my-4 text-center">
+    <h3>Du har loggats ut</h3>
+    <p>Omdirigerar dig till startsidan...</p>
 </div>
 
 @code {
     protected override void OnInitialized()
     {
-        // Om du har definierat egenskaper som icke-nullable, använd tomma strängar.
-        UserState.Username = string.Empty;
-        UserState.Role = string.Empty;
-        UserState.UserId = 0;
-        Navigation.NavigateTo("/");
+        UserState.Clear();
+        Navigation.NavigateTo("/", forceLoad: true);
     }
 }

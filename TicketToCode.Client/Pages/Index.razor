@@ -1,39 +1,65 @@
-﻿@page "/"
+﻿@page "/events"
 @inject HttpClient Http
 @using System.Net.Http.Json
-<div class="container my-4">
-    <h1>Kommande Evenemang</h1>
+@using TicketToCode.Core.Models
 
-    @if (events == null)
+<div class="container my-4">
+    <h2>Kommande Evenemang</h2>
+
+    <input class="form-control mb-3" placeholder="Sök evenemang..." @bind="searchQuery" @oninput="SearchEvents" />
+
+    @if (filteredEvents == null)
     {
-        <div class="alert alert-info">Laddar evenemang...</div>
+        <p>Laddar evenemang...</p>
     }
-    else if (!events.Any())
+    else if (!filteredEvents.Any())
     {
         <div class="alert alert-warning">Inga evenemang hittades.</div>
     }
     else
     {
         <div class="list-group">
-            @foreach (var evt in events)
+            @foreach (var ev in filteredEvents)
             {
-                <a class="list-group-item list-group-item-action" href="@($"/eventdetails/{evt.Id}")">
-                    <strong>@evt.Name</strong> - <span class="text-muted">@evt.Start.ToString("g")</span>
-                </a>
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>@ev.Name</strong><br />
+                            <small>@ev.Description</small><br />
+                            <small><i>@ev.StartTime.ToString("g")</i> – @ev.Type</small>
+                        </div>
+                        <div>
+                            <a class="btn btn-primary btn-sm me-2" href="/eventdetails/@ev.Id">Detaljer</a>
+                            <a class="btn btn-success btn-sm" href="/book/@ev.Id">Boka</a>
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     }
 </div>
 
 @code {
-    private List<EventResponse> events;
+    private List<Event> allEvents;
+    private List<Event> filteredEvents;
+    private string searchQuery = "";
 
     protected override async Task OnInitializedAsync()
     {
-        // Hämtar data från /events (se till att API:t returnerar rätt data)
-        events = await Http.GetFromJsonAsync<List<EventResponse>>("events");
+        allEvents = await Http.GetFromJsonAsync<List<Event>>("events");
+        filteredEvents = allEvents;
     }
 
+    private void SearchEvents(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        filteredEvents = string.IsNullOrWhiteSpace(searchQuery)
+            ? allEvents
+            : allEvents.Where(ev =>
+                ev.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                ev.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
     public class EventResponse
     {
         public int Id { get; set; }

@@ -1,20 +1,44 @@
 ﻿@page "/login"
 @inject HttpClient Http
-@inject TicketToCode.Client.Services.UserState UserState
 @inject NavigationManager Navigation
+@inject TicketToCode.Client.Services.UserState UserState
 @using System.Net.Http.Json
 
 <div class="container my-4" style="max-width: 400px;">
-    <h1>Login</h1>
+    <h1>Logga in</h1>
+
     <div class="mb-3">
         <label for="username" class="form-label">Användarnamn:</label>
         <input id="username" class="form-control" @bind="loginRequest.Username" />
     </div>
+
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord:</label>
-        <input id="password" type="password" class="form-control" @bind="loginRequest.Password" />
+        <input id="password" class="form-control"
+               type="@(_showPassword ? "text" : "password")"
+               @bind="loginRequest.Password" />
+        <div class="form-check mt-1">
+            <input class="form-check-input" type="checkbox" id="showPassword" @bind="_showPassword" />
+            <label class="form-check-label" for="showPassword">Visa lösenord</label>
+        </div>
     </div>
-    <button class="btn btn-primary" @onclick="LoginUser">Login</button>
+
+    <button class="btn btn-primary w-100" @onclick="LoginUser" disabled="@_isLoading">
+        <span>
+            @if (_isLoading)
+            {
+                <span>
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Loggar in...
+                </span>
+            }
+            else
+            {
+                <span>Logga in</span>
+            }
+        </span>
+    </button>
+
     @if (!string.IsNullOrEmpty(message))
     {
         <div class="alert alert-danger mt-3">@message</div>
@@ -23,27 +47,9 @@
 
 @code {
     private LoginRequest loginRequest = new();
-    private string message;
-
-    private async Task LoginUser()
-    {
-        var response = await Http.PostAsJsonAsync("auth/login", loginRequest);
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-            if (result != null)
-            {
-                UserState.Username = result.Username;
-                UserState.Role = result.Role;
-                UserState.UserId = 1; // Exempelvärde
-                Navigation.NavigateTo("/");
-            }
-        }
-        else
-        {
-            message = "Login misslyckades. Kontrollera dina uppgifter.";
-        }
-    }
+    private string message = "";
+    private bool _isLoading = false;
+    private bool _showPassword = false;
 
     public class LoginRequest
     {
@@ -53,7 +59,43 @@
 
     public class LoginResponse
     {
+        public int Id { get; set; }
         public string Username { get; set; } = "";
         public string Role { get; set; } = "";
+    }
+
+    private async Task LoginUser()
+    {
+        _isLoading = true;
+        message = "";
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("auth/login", loginRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                if (result != null)
+                {
+                    UserState.SetUser(result.Id, result.Username, result.Role);
+                    Navigation.NavigateTo("/");
+                }
+                else
+                {
+                    message = "Fel vid tolkning av serverns svar.";
+                }
+            }
+            else
+            {
+                var errorText = await response.Content.ReadAsStringAsync();
+                message = $"Inloggning misslyckades: {errorText}";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Tekniskt fel: {ex.Message}";
+        }
+
+        _isLoading = false;
     }
 }

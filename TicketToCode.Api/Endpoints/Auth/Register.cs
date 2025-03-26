@@ -4,27 +4,21 @@ namespace TicketToCode.Api.Endpoints.Auth;
 
 public class Register : IEndpoint
 {
-    // Mapping
     public static void MapEndpoint(IEndpointRouteBuilder app) => app
         .MapPost("/auth/register", Handle)
         .WithSummary("Register a new user")
         .AllowAnonymous();
 
-    // Models
     public record Request(string Username, string Password);
-    public record Response(string Username, string Role);
 
-    // Logic
-    private static Results<Ok<Response>, BadRequest<string>> Handle(
+    private static Results<Ok<UserDto>, BadRequest<string>> Handle(
         Request request,
         IAuthService authService)
     {
-        var result = authService.Register(request.Username, request.Password);
-        if (result == null)
-        {
+        var userDto = authService.Register(request.Username, request.Password);
+        if (userDto == null)
             return TypedResults.BadRequest("Username already exists");
-        }
-        var response = new Response(result.Username, result.Role);
-        return TypedResults.Ok(response);
+
+        return TypedResults.Ok(userDto);
     }
-} 
+}

@@ -5,8 +5,8 @@ namespace TicketToCode.Api.Services;
 
 public interface IAuthService
 {
-    User? Login(string username, string password);
-    User? Register(string username, string password);
+    UserDto? Login(string username, string password);
+    UserDto? Register(string username, string password);
 }
 
 // TODO: Implement better auth
@@ -22,7 +22,7 @@ public class AuthService : IAuthService
         _database = database;
     }
 
-    public User? Login(string username, string password)
+    public UserDto? Login(string username, string password)
     {
         var user = _database.Users.FirstOrDefault(u => u.Username == username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
@@ -30,19 +30,21 @@ public class AuthService : IAuthService
             return null;
         }
 
-        return new User(user.Username, user.Role);
+        return new UserDto(user.Id, user.Username, user.Role);
     }
 
-    public User? Register(string username, string password)
+    public UserDto? Register(string username, string password)
     {
         if (_database.Users.Any(u => u.Username == username))
         {
             return null;
         }
 
-        var user = new User(username, BCrypt.Net.BCrypt.HashPassword(password));
-
+        var hashedPwd = BCrypt.Net.BCrypt.HashPassword(password);
+        var user = new User(username, hashedPwd);
         _database.Users.Add(user);
-        return user;
+
+        return new UserDto(user.Id, user.Username, user.Role);
     }
-} 
+
+}

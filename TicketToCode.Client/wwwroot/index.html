@@ -1,32 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="sv">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TicketToCode.Client</title>
+    <title>2$TicketMaster</title>
     <base href="/" />
-    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="TicketToCode.Client.styles.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Bootstrap 5 CSS via CDN -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-OL5k70NIZbMu9CrnB+M6E1XY0pVd8flLt4GGR9H7JgK3k4B7DHCZZT1K1apDGaGW"
+          crossorigin="anonymous" />
 </head>
-
 <body>
-    <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
-    </div>
+    <div id="app">Laddar...</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
-    </div>
+    <!-- Blazor WebAssembly script -->
     <script src="_framework/blazor.webassembly.js"></script>
-</body>
 
+    <!-- Bootstrap 5 JavaScript via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-9AwPviWFFGZ6U03b/r7B+nKRZCJKmN3KsmuK7HIUTqWvOR4ulWR9qSflrpQYoCwF"
+            crossorigin="anonymous"></script>
+</body>
 </html>

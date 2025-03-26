@@ -1,0 +1,93 @@
+﻿@page "/book/{Id:int}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using System.Net.Http.Json
+<div class="container my-4">
+    @if (evt == null)
+    {
+        <div class="alert alert-info" role="alert">Laddar event...</div>
+    }
+    else
+    {
+        <h1>Boka Biljetter</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@evt.Name</h5>
+                <p class="card-text">@evt.Description</p>
+                <p><strong>Datum:</strong> @evt.Start.ToString("f")</p>
+                <p><strong>Tillgängliga biljetter:</strong> @evt.numberofTickets</p>
+
+                <div class="mb-3">
+                    <label for="tickets" class="form-label">Antal biljetter:</label>
+                    <input id="tickets" type="number" class="form-control" @bind="tickets" min="1" max="@evt.numberofTickets" />
+                </div>
+                <button class="btn btn-primary" @onclick="BookTickets">Boka</button>
+                @if (!string.IsNullOrEmpty(message))
+                {
+                    <div class="alert alert-info mt-3" role="alert">@message</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private EventResponse evt;
+    private int tickets = 1;
+    private string message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        evt = await Http.GetFromJsonAsync<EventResponse>($"events/{Id}");
+    }
+
+    private async Task BookTickets()
+    {
+        var bookingRequest = new BookingRequest
+            {
+                eventId = Id,
+                userId = 1, // Demovärde
+                numberOfTickets = tickets
+            };
+
+        var response = await Http.PostAsJsonAsync("bookings", bookingRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            message = "Bokningen lyckades!";
+        }
+        else
+        {
+            message = "Bokningen misslyckades. Kontrollera antalet tillgängliga biljetter.";
+        }
+    }
+
+    public enum EventType
+    {
+        Concert = 0,
+        Festival,
+        Theatre,
+        Other
+    }
+
+    public class EventResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public EventType Type { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public int MaxAttendees { get; set; }
+        public int numberofTickets { get; set; }
+    }
+
+    public class BookingRequest
+    {
+        public int eventId { get; set; }
+        public int userId { get; set; }
+        public int numberOfTickets { get; set; }
+    }
+}

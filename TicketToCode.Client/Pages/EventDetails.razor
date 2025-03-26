@@ -1,0 +1,59 @@
+﻿@page "/eventdetails/{Id:int}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using System.Net.Http.Json
+<div class="container my-4">
+    @if (evt == null)
+    {
+        <div class="alert alert-info" role="alert">Laddar event...</div>
+    }
+    else
+    {
+        <h1>@evt.Name</h1>
+        <div class="card">
+            <div class="card-body">
+                <p class="card-text">@evt.Description</p>
+                <p><strong>Datum:</strong> @evt.Start.ToString("f")</p>
+                <p><strong>Tillgängliga biljetter:</strong> @evt.numberofTickets</p>
+                <button class="btn btn-primary" @onclick="NavigateToBooking">Boka biljetter</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private EventResponse evt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        evt = await Http.GetFromJsonAsync<EventResponse>($"events/{Id}");
+    }
+
+    private void NavigateToBooking()
+    {
+        Navigation.NavigateTo($"/book/{Id}");
+    }
+
+    public enum EventType
+    {
+        Concert = 0,
+        Festival,
+        Theatre,
+        Other
+    }
+
+    public class EventResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public EventType Type { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public int MaxAttendees { get; set; }
+        public int numberofTickets { get; set; }
+    }
+}

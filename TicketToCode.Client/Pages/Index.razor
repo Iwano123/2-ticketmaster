@@ -1,0 +1,46 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<div class="container my-4">
+    <h1>Kommande Evenemang</h1>
+
+    @if (events == null)
+    {
+        <div class="alert alert-info">Laddar evenemang...</div>
+    }
+    else if (!events.Any())
+    {
+        <div class="alert alert-warning">Inga evenemang hittades.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var evt in events)
+            {
+                <a class="list-group-item list-group-item-action"
+                   href="@($"/eventdetails/{evt.Id}")">
+                    <strong>@evt.Name</strong> –
+                    <span class="text-muted">@evt.Start.ToString("g")</span>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<EventResponse> events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // GET /events (om ditt API är på https://localhost:7206/events)
+        events = await Http.GetFromJsonAsync<List<EventResponse>>("events");
+    }
+
+    public class EventResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Start { get; set; }
+        // ... fler propertys om du vill
+    }
+}

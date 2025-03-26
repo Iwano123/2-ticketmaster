@@ -4,16 +4,37 @@
 @using System.Net.Http.Json
 
 <div class="container my-4" style="max-width: 400px;">
-    <h1>Registrera</h1>
+    <h1>Registrera konto</h1>
+
     <div class="mb-3">
         <label for="username" class="form-label">Användarnamn:</label>
         <input id="username" class="form-control" @bind="registerRequest.Username" />
     </div>
+
     <div class="mb-3">
         <label for="password" class="form-label">Lösenord:</label>
-        <input id="password" type="password" class="form-control" @bind="registerRequest.Password" />
+        <input id="password" class="form-control"
+               type="@(_showPassword ? "text" : "password")"
+               @bind="registerRequest.Password" />
+        <div class="form-check mt-1">
+            <input class="form-check-input" type="checkbox" id="showPassword" @bind="_showPassword" />
+            <label class="form-check-label" for="showPassword">Visa lösenord</label>
+        </div>
     </div>
-    <button class="btn btn-primary" @onclick="RegisterUser">Registrera</button>
+
+    <button class="btn btn-success w-100" @onclick="RegisterUser" disabled="@_isLoading">
+        @if (_isLoading)
+        {
+            <span>
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Registrerar...
+            </span>
+        }
+        else
+        {
+            <span>Registrera</span>
+        }
+    </button>
 
     @if (!string.IsNullOrEmpty(message))
     {
@@ -24,26 +45,41 @@
 @code {
     private RegisterRequest registerRequest = new();
     private string message = "";
-
-    private async Task RegisterUser()
-    {
-        var response = await Http.PostAsJsonAsync("auth/register", registerRequest);
-        if (response.IsSuccessStatusCode)
-        {
-            message = "Registrering lyckades! Du omdirigeras till inloggning...";
-            await Task.Delay(2000); // Visa meddelande i 2 sekunder
-            Navigation.NavigateTo("/login");
-        }
-        else
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            message = $"Registrering misslyckades: {error}";
-        }
-    }
+    private bool _isLoading = false;
+    private bool _showPassword = false;
 
     public class RegisterRequest
     {
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
     }
+
+    private async Task RegisterUser()
+    {
+        _isLoading = true;
+        message = "";
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("auth/register", registerRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                message = "Registrering lyckades! Omdirigerar till inloggning...";
+                await Task.Delay(1500);
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                message = $"Registrering misslyckades: {error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Tekniskt fel: {ex.Message}";
+        }
+
+        _isLoading = false;
+    }
 }
+

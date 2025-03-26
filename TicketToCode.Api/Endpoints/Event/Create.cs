@@ -23,23 +23,22 @@ public class CreateEvent : IEndpoint
     //Logic
     private static Ok<Response> Handle(Request request, IDatabase db)
     {
-        // Todo, use a better constructor that enforces setting all necessary properties
-        var ev = new Event();
+        var ev = new Event
+        {
+            Name = request.Name,
+            Description = request.Description,
+            Type = request.Type,
+            StartTime = request.Start,
+            EndTime = request.End,
+            MaxAttendees = request.MaxAttendees,
+            AvailableTickets = request.numberOfTickets
+        };
 
-        // Map request to an event-object
-        ev.Name = request.Name;
-        ev.Description = request.Description;
-        ev.Type = request.Type;
-        ev.StartTime = request.Start;
-        ev.EndTime = request.End;
-        ev.MaxAttendees = request.MaxAttendees;
-        ev.AvailableTickets = request.numberOfTickets;
+        db.AddEvent(ev); 
 
-
-        // Todo: does this set id on ev-object?
-        db.Events.Add(ev); 
-
-        return TypedResults.Ok(new Response(ev.Id));
+        return TypedResults.Ok(new Response(ev.Id)); 
     }
+
 }
+
 

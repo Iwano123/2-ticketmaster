@@ -1,4 +1,5 @@
-﻿@namespace TicketToCode.Client.Shared
+﻿@using TicketToCode.Client.Services
+@inject UserState UserState
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
@@ -14,19 +15,40 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/">Hem</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/mybookings">Mina Bokningar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/register">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">Logout</a>
-                </li>
+
+                @if (UserState.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mybookings">Mina Bokningar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logga ut</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Logga in</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Registrera</a>
+                    </li>
+                }
+
+                @if (UserState.IsAdmin)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Adminpanel</a>
+                    </li>
+                }
             </ul>
+
+            @if (UserState.IsAuthenticated)
+            {
+                <span class="navbar-text me-2">
+                    Inloggad som <strong>@UserState.Username</strong>
+                </span>
+            }
         </div>
     </div>
 </nav>

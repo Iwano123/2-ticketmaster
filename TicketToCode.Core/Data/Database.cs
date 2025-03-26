@@ -33,6 +33,9 @@ public class Database : IDatabase
     public List<Event> Events { get; set; } = new List<Event>();
     public List<User> Users { get; set; } = new List<User>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
+    private int _eventIdCounter = 1;
+    private int _userIdCounter = 1;
+    private int _bookingIdCounter = 1;
 
     // Metoder för evenemang
     public List<Event> GetUpcomingEvents()
@@ -53,9 +56,10 @@ public class Database : IDatabase
 
     public void AddEvent(Event evt)
     {
-        evt.Id = Events.Count + 1; // Simpelt ID-hantering
+        evt.Id = _eventIdCounter++;
         Events.Add(evt);
     }
+
 
     public void UpdateEvent(Event updatedEvent)
     {
@@ -82,7 +86,7 @@ public class Database : IDatabase
     // Metoder för användare
     public void AddUser(User user)
     {
-        user.Id = Users.Count + 1; // Simpelt ID-hantering
+        user.Id = _userIdCounter++;
         Users.Add(user);
     }
 
@@ -103,7 +107,7 @@ public class Database : IDatabase
     // Metoder för bokningar
     public void AddBooking(Booking booking)
     {
-        booking.Id = Bookings.Count + 1; // Simpelt ID-hantering
+        booking.Id = _bookingIdCounter++;
         Bookings.Add(booking);
     }
 

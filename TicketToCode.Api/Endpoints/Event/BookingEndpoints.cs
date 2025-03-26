@@ -10,7 +10,7 @@ public static class BookingEndpoints
     {
         app.MapPost("/bookings", (int eventId, int userId, int numberOfTickets, IDatabase db) =>
         {
-            var success = db.BookTickets(eventId, userId, numberOfTickets);
+            var success = db.BookTicket(eventId, userId, numberOfTickets);
             return success ? Results.Ok() : Results.BadRequest("Not enough tickets available");
         }).WithSummary("Book tickets for an event");
 

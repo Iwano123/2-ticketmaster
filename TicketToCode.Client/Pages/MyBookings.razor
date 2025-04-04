@@ -1,56 +1,51 @@
 ﻿@page "/mybookings"
-@inject HttpClient Http
-@inject TicketToCode.Client.Services.UserState UserState
-@using System.Net.Http.Json
-<div class="container my-4">
-    <h1>Mina Bokningar</h1>
-    @if (!UserState.IsAuthenticated)
-    {
-        <div class="alert alert-warning" role="alert">
-            Du måste vara inloggad för att se dina bokningar.
-        </div>
-    }
-    else if (bookings == null)
-    {
-        <div class="alert alert-info" role="alert">
-            Laddar bokningar...
-        </div>
-    }
-    else if (!bookings.Any())
-    {
-        <div class="alert alert-warning" role="alert">
-            Inga bokningar hittades.
-        </div>
-    }
-    else
-    {
-        <div class="list-group">
-            @foreach (var booking in bookings)
-            {
-                <div class="list-group-item">
-                    <strong>Event ID: @booking.EventId</strong> – @booking.NumberOfTickets biljetter bokade den @booking.BookingDate.ToString("g")
-                </div>
-            }
-        </div>
-    }
-</div>
+@inject BookingService BookingService
+@inject AuthService AuthService
+@using TicketToCode.Client.Models
+@using TicketToCode.Client.Services
+
+<h3 class="text-center my-4">Mina bokningar</h3>
+
+@if (bookings == null)
+{
+    <p>Laddar...</p>
+}
+else if (!bookings.Any())
+{
+    <p>Du har inga bokningar ännu.</p>
+}
+else
+{
+    <div class="event-grid">
+        @foreach (var booking in bookings)
+        {
+            <div class="event-card">
+                <p><strong>Event ID:</strong> @booking.EventId</p>
+                <p><strong>Biljetter:</strong> @booking.NumberOfTickets</p>
+                <p><strong>Bokat:</strong> @booking.BookingDate</p>
+                <button @onclick="() => Cancel(booking.Id)" class="form-button">Avboka</button>
+            </div>
+        }
+    </div>
+}
 
 @code {
-    private List<BookingResponse> bookings;
+    List<BookingDto>? bookings;
 
     protected override async Task OnInitializedAsync()
     {
-        if (UserState.IsAuthenticated)
+        if (AuthService.CurrentUser != null)
         {
-            bookings = await Http.GetFromJsonAsync<List<BookingResponse>>($"bookings/user/{UserState.UserId}");
+            bookings = await BookingService.GetUserBookings(AuthService.CurrentUser.Id);
         }
     }
 
-    public class BookingResponse
+    async Task Cancel(int id)
     {
-        public int Id { get; set; }
-        public int EventId { get; set; }
-        public int NumberOfTickets { get; set; }
-        public DateTime BookingDate { get; set; }
+        var result = await BookingService.CancelBooking(id);
+        if (result)
+        {
+            bookings = await BookingService.GetUserBookings(AuthService.CurrentUser!.Id);
+        }
     }
 }

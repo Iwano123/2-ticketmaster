@@ -1,0 +1,53 @@
+﻿@page "/eventbookings/{EventId:int}"
+@inject EventService EventService
+@inject AuthService AuthService
+
+<h2 class="text-center my-4">Bokningar för Event @EventId</h2>
+
+@if (AuthService.CurrentUser?.Role != "Admin")
+{
+    <p>Endast administratörer har tillgång till denna sida.</p>
+}
+else if (bookings == null)
+{
+    <p>Laddar bokningar...</p>
+}
+else if (!bookings.Any())
+{
+    <p>Inga bokningar hittades.</p>
+}
+else
+{
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Boknings-ID</th>
+                <th>Användare</th>
+                <th>Antal Biljetter</th>
+                <th>Datum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in bookings)
+            {
+                <tr>
+                    <td>@b.Id</td>
+                    <td>@b.UserId</td>
+                    <td>@b.NumberOfTickets</td>
+                    <td>@b.BookingDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public int EventId { get; set; }
+
+    List<BookingDto>? bookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookings = await EventService.GetBookingsForEvent(EventId);
+    }
+}

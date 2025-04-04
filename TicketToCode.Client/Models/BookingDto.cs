@@ -1,6 +1,6 @@
-﻿namespace TicketToCode.Core.Models;
+﻿namespace TicketToCode.Client.Models;
 
-public class Booking
+public class BookingDto
 {
     public int Id { get; set; }
     public int EventId { get; set; }

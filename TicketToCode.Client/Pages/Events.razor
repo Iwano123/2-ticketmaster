@@ -1,0 +1,47 @@
+﻿@page "/events"
+@inject EventService EventService
+
+<h2 class="text-center my-4">Kommande Evenemang</h2>
+
+@if (events == null)
+{
+    <p class="text-center">Laddar evenemang...</p>
+}
+else if (!events.Any())
+{
+    <p class="text-center">Inga evenemang hittades.</p>
+}
+else
+{
+   
+    <div class="container mt-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var ev in events)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@ev.Name</h5>
+                            <p class="card-text">@ev.Description</p>
+                            <p><small>Start: @ev.Start.ToString("g")</small></p>
+                            <p><small>Slut: @ev.End.ToString("g")</small></p>
+                            <p><span class="badge bg-success">@ev.NumberOfTickets kvar</span></p>
+                            <a class="btn btn-primary" href="/eventdetails/@ev.Id">Visa detaljer</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+}
+
+@code {
+    List<EventDto>? events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await EventService.GetAllEvents();
+    }
+}

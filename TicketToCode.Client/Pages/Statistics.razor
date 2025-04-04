@@ -1,0 +1,55 @@
+﻿@page "/statistics"
+@inject StatisticsService StatisticsService
+@inject AuthService AuthService
+
+<h2 class="text-center my-4">Statistik</h2>
+
+@if (AuthService.CurrentUser?.Role != "Admin")
+{
+    <p>Du har inte behörighet att se denna sida.</p>
+}
+else if (stats == null)
+{
+    <p>Laddar statistik...</p>
+}
+else
+{
+    <div class="container mt-4">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Evenemang</h5>
+                        <p class="card-text display-6">@stats.TotalEvents</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Bokningar</h5>
+                        <p class="card-text display-6">@stats.TotalBookings</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Användare</h5>
+                        <p class="card-text display-6">@stats.TotalUsers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    StatisticsDto? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await StatisticsService.GetStats();
+    }
+}

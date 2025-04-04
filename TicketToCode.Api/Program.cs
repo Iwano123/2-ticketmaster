@@ -4,10 +4,10 @@ using TicketToCode.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) Lägg till Swagger/OpenAPI
+// Lägg till Swagger/OpenAPI
 builder.Services.AddOpenApi();
 
-// 2) Lägg till CORS-policy
+//  Lägg till CORS-policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
@@ -21,11 +21,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 3) Registrera tjänster
+//  Registrera tjänster
 builder.Services.AddSingleton<IDatabase, Database>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// 4) Om du använder cookie-autentisering:
+//  Om du använder cookie-autentisering:
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
@@ -41,7 +41,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 5) Swagger i Development
+//  Swagger i Development
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -52,23 +52,23 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// 6) Https-redirect
+//  Https-redirect
 app.UseHttpsRedirection();
 
-// 7) Använd CORS innan authentication/authorization
+// Använd CORS innan authentication/authorization
 app.UseCors("AllowBlazorClient");
 
-// 8) Authentication + Authorization
+//  Authentication + Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 9) Mappa endpoints
+//  Mappa endpoints
 app.MapEndpoints<Program>();
-app.MapEventEndpoints();
+
 app.MapBookingEndpoints();
 app.MapUserEndpoints();
 
-// Exempel på en skyddad endpoint
+
 app.MapGet("/secure", [Microsoft.AspNetCore.Authorization.Authorize] () => "Secure endpoint!");
 
 app.Run();

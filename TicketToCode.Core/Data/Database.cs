@@ -23,8 +23,7 @@ public interface IDatabase
     void AddBooking(Booking booking);
     Booking GetBooking(int id);
     void DeleteBooking(int id);
-    bool BookTickets(int eventId, int userId, int numberOfTickets);
-    bool BookTicket(int eventId, int userId, int numberOfTickets);
+    bool BookTicket(int eventId, int userId, int NumberOfTickets);
     void UpdateUser(User updatedUser);
 }
 
@@ -125,27 +124,6 @@ public class Database : IDatabase
         }
     }
 
-    public bool BookTickets(int eventId, int userId, int numberOfTickets)
-    {
-        var evt = Events.FirstOrDefault(e => e.Id == eventId);
-        if (evt == null || evt.MaxAttendees < numberOfTickets)
-        {
-            return false; // Evenemanget finns inte eller det finns inte tillräckligt med biljetter
-        }
-
-        var booking = new Booking
-        {
-            EventId = eventId,
-            UserId = userId,
-            NumberOfTickets = numberOfTickets,
-            BookingDate = DateTime.Now
-        };
-
-        Bookings.Add(booking);
-        evt.MaxAttendees -= numberOfTickets; // Minska antalet tillgängliga biljetter
-        return true;
-    }
-
     public List<Booking> GetUserBookings(int userId)
     {
         return Bookings.Where(b => b.UserId == userId).ToList();
@@ -194,7 +172,7 @@ public class Database : IDatabase
         var evt = Events.FirstOrDefault(e => e.Id == eventId);
         if (evt == null || evt.AvailableTickets < numberOfTickets)
         {
-            return false; // Evenemanget finns inte eller det finns inte tillräckligt med biljetter
+            return false;
         }
 
         var booking = new Booking
@@ -205,8 +183,9 @@ public class Database : IDatabase
             BookingDate = DateTime.Now
         };
 
-        Bookings.Add(booking);
-        evt.AvailableTickets -= numberOfTickets; // Minska antalet tillgängliga biljetter
+        AddBooking(booking);
+        evt.AvailableTickets -= numberOfTickets; 
         return true;
     }
+
 }

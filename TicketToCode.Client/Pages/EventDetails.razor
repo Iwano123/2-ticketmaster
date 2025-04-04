@@ -1,59 +1,57 @@
 ﻿@page "/eventdetails/{Id:int}"
-@inject HttpClient Http
-@inject NavigationManager Navigation
-@using System.Net.Http.Json
-<div class="container my-4">
-    @if (evt == null)
-    {
-        <div class="alert alert-info" role="alert">Laddar event...</div>
-    }
-    else
-    {
-        <h1>@evt.Name</h1>
-        <div class="card">
-            <div class="card-body">
-                <p class="card-text">@evt.Description</p>
-                <p><strong>Datum:</strong> @evt.Start.ToString("f")</p>
-                <p><strong>Tillgängliga biljetter:</strong> @evt.numberofTickets</p>
-                <button class="btn btn-primary" @onclick="NavigateToBooking">Boka biljetter</button>
-            </div>
-        </div>
-    }
-</div>
+@inject EventService EventService
+@inject BookingService BookingService
+@inject AuthService AuthService
+@inject NavigationManager Nav
+@using TicketToCode.Client.Models
+@using TicketToCode.Client.Services
+@using Microsoft.AspNetCore.Components
+
+
+<h3 class="text-center my-4">Evenemangsdetaljer</h3>
+
+@if (eventData == null)
+{
+    <p>Laddar...</p>
+}
+else
+{
+    <div class="event-card large">
+        <h4>@eventData.Name</h4>
+        <p>@eventData.Description</p>
+        <p><strong>Start:</strong> @eventData.Start</p>
+        <p><strong>Slut:</strong> @eventData.End</p>
+        <p><strong>Platser kvar:</strong> @eventData.NumberOfTickets</p>
+
+        @if (AuthService.CurrentUser is not null)
+        {
+            <input type="number" min="1" @bind="NumberOfTickets" />
+            <button @onclick="Book" class="form-button">Boka biljetter</button>
+            <p>@Message</p>
+        }
+        else
+        {
+            <p><a href="/login">Logga in</a> för att boka.</p>
+        }
+    </div>
+}
 
 @code {
-    [Parameter]
-    public int Id { get; set; }
-
-    private EventResponse evt;
+    [Parameter] public int Id { get; set; }
+    EventDto? eventData;
+    int NumberOfTickets = 1;
+    string Message = "";
 
     protected override async Task OnInitializedAsync()
     {
-        evt = await Http.GetFromJsonAsync<EventResponse>($"events/{Id}");
+        eventData = await EventService.GetEvent(Id);
     }
 
-    private void NavigateToBooking()
+    async Task Book()
     {
-        Navigation.NavigateTo($"/book/{Id}");
-    }
+        if (AuthService.CurrentUser == null) return;
 
-    public enum EventType
-    {
-        Concert = 0,
-        Festival,
-        Theatre,
-        Other
-    }
-
-    public class EventResponse
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string Description { get; set; } = "";
-        public EventType Type { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public int MaxAttendees { get; set; }
-        public int numberofTickets { get; set; }
+        var success = await BookingService.BookTickets(new BookingRequest(Id, AuthService.CurrentUser.Id, NumberOfTickets));
+        Message = success ? "Bokning lyckades!" : "Bokning misslyckades!";
     }
 }

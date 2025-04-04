@@ -1,24 +1,22 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using TicketToCode.Client;
 using TicketToCode.Client.Services;
 
-namespace TicketToCode.Client
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+
+
+builder.Services.AddScoped(sp => new HttpClient
 {
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddScoped<UserState>();
-            builder.RootComponents.Add<App>("#app");
+    BaseAddress = new Uri("https://localhost:7206") 
+});
 
-            // Peka mot ditt API
-            builder.Services.AddScoped(sp => new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:7206/")
-            });
+// Registrera våra egna services
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<EventService>();
+builder.Services.AddScoped<BookingService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<StatisticsService>();
 
-            await builder.Build().RunAsync();
-        }
-    }
-}
+await builder.Build().RunAsync();

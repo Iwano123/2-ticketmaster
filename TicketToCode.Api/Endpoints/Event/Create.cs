@@ -6,9 +6,7 @@ public class CreateEvent : IEndpoint
         .MapPost("/events", Handle)
         .WithSummary("Create event");
 
-    // Request and Response types
-    // Why do we need these? check this video if you are not sure
-    // https://youtu.be/xtpPspNdX58?si=GJBUxMzeR2ZJ5Fg_
+   
     public record Request(
         string Name,
         string Description,
@@ -16,7 +14,7 @@ public class CreateEvent : IEndpoint
         DateTime Start,
         DateTime End,
         int MaxAttendees,
-        int numberOfTickets
+        int NumberOfTickets
         );
     public record Response(int id);
 
@@ -31,7 +29,7 @@ public class CreateEvent : IEndpoint
             StartTime = request.Start,
             EndTime = request.End,
             MaxAttendees = request.MaxAttendees,
-            AvailableTickets = request.numberOfTickets
+            AvailableTickets = request.NumberOfTickets
         };
 
         db.AddEvent(ev); 
@@ -40,5 +38,3 @@ public class CreateEvent : IEndpoint
     }
 
 }
-
-

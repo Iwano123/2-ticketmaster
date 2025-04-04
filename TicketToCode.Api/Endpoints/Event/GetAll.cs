@@ -15,7 +15,7 @@ public class GetAllEvents : IEndpoint
         DateTime Start,
         DateTime End,
         int MaxAttendees,
-        int numberofTickets
+        int NumberOfTickets
     );
 
     //Logic
@@ -30,7 +30,7 @@ public class GetAllEvents : IEndpoint
                 Start: item.StartTime,
                 End: item.EndTime,
                 MaxAttendees: item.MaxAttendees,
-                numberofTickets: item.AvailableTickets
+                NumberOfTickets: item.AvailableTickets
             )).ToList();
     }
 }

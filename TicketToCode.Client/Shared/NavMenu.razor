@@ -1,58 +1,31 @@
-﻿@using TicketToCode.Client.Services
-@inject UserState UserState
+﻿@inject AuthService AuthService
+@inject NavigationManager Nav
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">2$TicketMaster</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Hem</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/events">Evenemang</a>
-                </li>
+<nav class="nav-container">
+    <a href="/events" class="nav-link">Evenemang</a>
+    @if (AuthService.CurrentUser is not null)
+    {
+        <a href="/mybookings" class="nav-link">Mina bokningar</a>
 
+        @if (AuthService.CurrentUser.Role == "Admin")
+        {
+            <a href="/admin" class="nav-link">Adminpanel</a>
+        }
 
-                @if (UserState.IsAuthenticated)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/mybookings">Mina Bokningar</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Logga ut</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Logga in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">Registrera</a>
-                    </li>
-                }
-
-                @if (UserState.IsAdmin)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin">Adminpanel</a>
-                    </li>
-                }
-            </ul>
-
-            @if (UserState.IsAuthenticated)
-            {
-                <span class="navbar-text me-2">
-                    Inloggad som <strong>@UserState.Username</strong>
-                </span>
-            }
-        </div>
-    </div>
+        <span class="nav-user">Hej, @AuthService.CurrentUser.Username!</span>
+        <button @onclick="Logout" class="nav-button">Logga ut</button>
+    }
+    else
+    {
+        <a href="/login" class="nav-link">Logga in</a>
+        <a href="/register" class="nav-link">Registrera</a>
+    }
 </nav>
+
+@code {
+    void Logout()
+    {
+        AuthService.Logout();
+        Nav.NavigateTo("/login", forceLoad: true);
+    }
+}

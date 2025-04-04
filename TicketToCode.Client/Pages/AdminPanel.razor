@@ -1,0 +1,40 @@
+﻿@page "/admin"
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<h2 class="text-center my-4">Adminpanel</h2>
+
+@if (AuthService.CurrentUser?.Role != "Admin")
+{
+    <p>Du har inte behörighet att se denna sida.</p>
+}
+else
+{
+    <div class="admin-buttons">
+        <a href="/manageevents" class="admin-link">Hantera Evenemang</a>
+        <a href="/manageusers" class="admin-link">Hantera Användare</a>
+        <a href="/statistics" class="admin-link">Statistik</a>
+    </div>
+}
+
+<style>
+    .admin-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .admin-link {
+        padding: 0.75rem 1.5rem;
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .admin-link:hover {
+        background-color: #0056b3;
+    }
+</style>

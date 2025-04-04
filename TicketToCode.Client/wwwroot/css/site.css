@@ -1,0 +1,140 @@
+﻿.form-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.form-button {
+    background-color: #0078D4;
+    color: white;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+    .form-button:hover {
+        background-color: #005fa3;
+    }
+
+.event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.event-card {
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.btn-details {
+    margin-top: 1rem;
+    text-align: center;
+    background-color: #28a745;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-details:hover {
+        background-color: #1e7e34;
+    }
+
+.nav-container {
+    background-color: #343a40;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .nav-link:hover {
+        text-decoration: underline;
+    }
+
+.nav-button {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.nav-user {
+    margin-left: auto;
+    margin-right: 1rem;
+    font-weight: bold;
+}
+
+.form-button.secondary {
+    background-color: #6c757d;
+}
+
+.form-button.danger {
+    background-color: #dc3545;
+}
+
+.form-button.small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem auto;
+}
+
+    .user-table th, .user-table td {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.stat-box {
+    background: #f8f9fa;
+    padding: 1rem 2rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 150px;
+}

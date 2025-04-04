@@ -1,0 +1,122 @@
+﻿@page "/manageevents"
+@inject EventService EventService
+@inject AuthService AuthService
+
+<h2 class="text-center my-4">Hantera Evenemang</h2>
+
+@if (AuthService.CurrentUser?.Role != "Admin")
+{
+    <p>Endast administratörer har tillgång till denna sida.</p>
+}
+else
+{
+    <div class="container mt-4">
+        <h4>@(isEditMode ? "Redigera Evenemang" : "Skapa Evenemang")</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <input class="form-control" placeholder="Namn" @bind="eventModel.Name" />
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" @bind="eventModel.Description" placeholder="Beskrivning"></textarea>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="datetime-local" @bind="eventModel.Start" />
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="datetime-local" @bind="eventModel.End" />
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="number" @bind="eventModel.MaxAttendees" placeholder="Max antal" />
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="number" @bind="eventModel.NumberOfTickets" placeholder="Biljetter" />
+                </div>
+                <button class="btn btn-success me-2" @onclick="SaveEvent">Spara</button>
+                @if (isEditMode)
+                {
+                    <button class="btn btn-secondary" @onclick="CancelEdit">Avbryt</button>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <hr />
+
+    <h4>Alla Evenemang</h4>
+
+    <div class="event-grid">
+        @foreach (var ev in events)
+        {
+            <div class="event-card">
+                <h5>@ev.Name</h5>
+                <p>@ev.Description</p>
+                <p><strong>Start:</strong> @ev.Start</p>
+                <p><strong>Slut:</strong> @ev.End</p>
+                <button @onclick="() => EditEvent(ev)" class="form-button small">Redigera</button>
+                <button @onclick="() => DeleteEvent(ev.Id)" class="form-button danger small">Ta bort</button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    List<EventDto> events = new();
+    EventDto eventModel = new();
+    bool isEditMode = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEvents();
+    }
+
+    async Task LoadEvents()
+    {
+        events = await EventService.GetAllEvents();
+    }
+
+    async Task SaveEvent()
+    {
+        if (isEditMode)
+        {
+            await EventService.UpdateEvent(eventModel);
+        }
+        else
+        {
+            await EventService.CreateEvent(eventModel);
+        }
+
+        await LoadEvents();
+        eventModel = new();
+        isEditMode = false;
+    }
+
+    void EditEvent(EventDto ev)
+    {
+        eventModel = new EventDto
+            {
+                Id = ev.Id,
+                Name = ev.Name,
+                Description = ev.Description,
+                Start = ev.Start,
+                End = ev.End,
+                MaxAttendees = ev.MaxAttendees,
+                NumberOfTickets = ev.NumberOfTickets,
+                Type = ev.Type
+            };
+        isEditMode = true;
+    }
+
+    void CancelEdit()
+    {
+        eventModel = new();
+        isEditMode = false;
+    }
+
+    async Task DeleteEvent(int id)
+    {
+        await EventService.DeleteEvent(id);
+        await LoadEvents();
+    }
+}

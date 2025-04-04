@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TicketToCode.Core.Models
+﻿namespace TicketToCode.Client.Models
 {
+    public class UserDto
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = "";
+        public string Role { get; set; } = "User";
 
-    public record UserDto(int Id, string Username, string Role);
+        public UserDto() { } // ← behövs för tom initiering
 
+        public UserDto(int id, string username, string role)
+        {
+            Id = id;
+            Username = username;
+            Role = role;
+        }
+    }
 }

@@ -1,0 +1,108 @@
+﻿@page "/manageusers"
+@inject AuthService AuthService
+@inject UserService UserService
+
+<h2 class="text-center my-4">Hantera Användare</h2>
+
+@if (AuthService.CurrentUser?.Role != "Admin")
+{
+    <p>Du har inte behörighet att se denna sida.</p>
+}
+else
+{
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Användarnamn</th>
+                <th>Roll</th>
+                <th>Redigera</th>
+                <th>Ta bort</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>
+                        @if (editUser?.Id == user.Id)
+                        {
+                            <input @bind="editUser.Username" />
+                        }
+                        else
+                        {
+                            @user.Username
+                        }
+                    </td>
+                    <td>
+                        @if (editUser?.Id == user.Id)
+                        {
+                            <select @bind="editUser.Role">
+                                <option value="User">User</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        }
+                        else
+                        {
+                            @user.Role
+                        }
+                    </td>
+                    <td>
+                        @if (editUser?.Id == user.Id)
+                        {
+                            <button @onclick="SaveEdit">Spara</button>
+                            <button @onclick="CancelEdit">Avbryt</button>
+                        }
+                        else
+                        {
+                            <button @onclick="() => EditUser(user)">Redigera</button>
+                        }
+                    </td>
+                    <td>
+                        <button @onclick="() => DeleteUser(user.Id)">Ta bort</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<UserDto> users = new();
+    UserDto? editUser = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulerar GET all users – justera om du lägger till riktig endpoint
+        for (int i = 1; i <= 5; i++)
+        {
+            users.Add(new UserDto(i, $"user{i}", i == 1 ? "Admin" : "User"));
+        }
+    }
+
+    void EditUser(UserDto user)
+    {
+        editUser = new UserDto(user.Id, user.Username, user.Role);
+    }
+
+    void CancelEdit() => editUser = null;
+
+    async Task SaveEdit()
+    {
+        if (editUser != null)
+        {
+            await UserService.UpdateUser(editUser);
+            var index = users.FindIndex(u => u.Id == editUser.Id);
+            if (index >= 0)
+                users[index] = editUser;
+            editUser = null;
+        }
+    }
+
+    async Task DeleteUser(int id)
+    {
+        await UserService.DeleteUser(id);
+        users = users.Where(u => u.Id != id).ToList();
+    }
+}

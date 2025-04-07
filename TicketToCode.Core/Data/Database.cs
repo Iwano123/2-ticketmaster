@@ -25,6 +25,7 @@ public interface IDatabase
     void DeleteBooking(int id);
     bool BookTicket(int eventId, int userId, int NumberOfTickets);
     void UpdateUser(User updatedUser);
+    List<User> GetAllUsers();
 
 }
 
@@ -106,6 +107,10 @@ public class Database : IDatabase
     public User GetUser(int id)
     {
         return Users.FirstOrDefault(u => u.Id == id);
+    }
+    public List<User> GetAllUsers()
+    {
+        return Users;
     }
 
     public void DeleteUser(int id)

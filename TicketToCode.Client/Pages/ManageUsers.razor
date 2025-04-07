@@ -74,12 +74,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulerar GET all users – justera om du lägger till riktig endpoint
-        for (int i = 1; i <= 5; i++)
-        {
-            users.Add(new UserDto(i, $"user{i}", i == 1 ? "Admin" : "User"));
-        }
+        users = await UserService.GetAllUsers();
     }
+
 
     void EditUser(UserDto user)
     {

@@ -8,6 +8,12 @@ public static class UserEndpoints
 {
     public static void MapUserEndpoints(this IEndpointRouteBuilder app)
     {
+        app.MapGet("/users", (IDatabase db) =>
+        {
+            var users = db.GetAllUsers();
+            return Results.Ok(users);
+        }).WithSummary("Get all users");
+
         app.MapGet("/users/{id}", (int id, IDatabase db) =>
         {
             var user = db.GetUser(id);

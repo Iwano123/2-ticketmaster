@@ -12,20 +12,18 @@ public class UserService
         _http = http;
     }
 
-    public async Task<UserDto?> GetUser(int id)
+    public async Task<List<UserDto>> GetAllUsers()
     {
-        return await _http.GetFromJsonAsync<UserDto>($"/users/{id}");
+        return await _http.GetFromJsonAsync<List<UserDto>>("/users") ?? new();
     }
 
-    public async Task<bool> UpdateUser(UserDto user)
+    public async Task UpdateUser(UserDto user)
     {
-        var response = await _http.PutAsJsonAsync($"/users/{user.Id}", user);
-        return response.IsSuccessStatusCode;
+        await _http.PutAsJsonAsync($"/users/{user.Id}", user);
     }
 
-    public async Task<bool> DeleteUser(int id)
+    public async Task DeleteUser(int id)
     {
-        var response = await _http.DeleteAsync($"/users/{id}");
-        return response.IsSuccessStatusCode;
+        await _http.DeleteAsync($"/users/{id}");
     }
 }

@@ -28,8 +28,14 @@ public class AuthService
     public async Task<bool> Register(string username, string password)
     {
         var response = await _http.PostAsJsonAsync("/auth/register", new RegisterRequest(username, password));
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode)
+        {
+            CurrentUser = await response.Content.ReadFromJsonAsync<UserDto>();
+            return true;
+        }
+        return false;
     }
+
 
     public void Logout()
     {

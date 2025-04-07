@@ -25,6 +25,7 @@ public interface IDatabase
     void DeleteBooking(int id);
     bool BookTicket(int eventId, int userId, int NumberOfTickets);
     void UpdateUser(User updatedUser);
+
 }
 
 public class Database : IDatabase
@@ -35,6 +36,19 @@ public class Database : IDatabase
     private int _eventIdCounter = 1;
     private int _userIdCounter = 1;
     private int _bookingIdCounter = 1;
+    public Database()
+    {
+        Users.Add(new User
+        {
+            Id = _userIdCounter++,
+            Username = "admin",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"), 
+            Role = "Admin"
+        });
+
+    }
+
+
 
     // Metoder för evenemang
     public List<Event> GetUpcomingEvents()
@@ -123,6 +137,7 @@ public class Database : IDatabase
             Bookings.Remove(booking);
         }
     }
+
 
     public List<Booking> GetUserBookings(int userId)
     {

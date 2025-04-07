@@ -1,17 +1,28 @@
 ﻿@page "/register"
 @inject AuthService AuthService
 @inject NavigationManager Navigation
-@using TicketToCode.Client.Models
-@using TicketToCode.Client.Services
 
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h3 class="text-center mb-3">Skapa konto</h3>
 
-<h3 class="text-center my-4">Skapa konto</h3>
+            <div class="form-group mb-3">
+                <input @bind="Username" class="form-control" placeholder="Användarnamn" />
+            </div>
 
-<div class="form-container">
-    <input @bind="Username" placeholder="Användarnamn" class="form-input" />
-    <input @bind="Password" placeholder="Lösenord" type="password" class="form-input" />
-    <button @onclick="RegisterUser" class="form-button">Registrera</button>
-    <p>@Message</p>
+            <div class="form-group mb-3">
+                <input @bind="Password" type="password" class="form-control" placeholder="Lösenord" />
+            </div>
+
+            <button class="btn btn-success w-100" @onclick="RegisterUser">Registrera</button>
+
+            @if (!string.IsNullOrWhiteSpace(Message))
+            {
+                <div class="alert alert-info mt-3 text-center">@Message</div>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -24,11 +35,13 @@
         var success = await AuthService.Register(Username, Password);
         if (success)
         {
+            Message = "Registrering lyckades! Du skickas vidare...";
+            await Task.Delay(1500);
             Navigation.NavigateTo("/login");
         }
         else
         {
-            Message = "Användarnamnet finns redan.";
+            Message = "Användarnamnet är redan taget.";
         }
     }
 }

@@ -1,40 +1,39 @@
 ﻿@page "/admin"
 @inject AuthService AuthService
-@inject NavigationManager Nav
-
-<h2 class="text-center my-4">Adminpanel</h2>
 
 @if (AuthService.CurrentUser?.Role != "Admin")
 {
-    <p>Du har inte behörighet att se denna sida.</p>
+    <p class="text-danger">Du har inte behörighet att se denna sida.</p>
 }
 else
 {
-    <div class="admin-buttons">
-        <a href="/manageevents" class="admin-link">Hantera Evenemang</a>
-        <a href="/manageusers" class="admin-link">Hantera Användare</a>
-        <a href="/statistics" class="admin-link">Statistik</a>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Adminpanel</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Hantera användare</h5>
+                        <a class="btn btn-outline-primary w-100" href="/manageusers">Gå till</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Hantera evenemang</h5>
+                        <a class="btn btn-outline-primary w-100" href="/manageevents">Gå till</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Statistik</h5>
+                        <a class="btn btn-outline-primary w-100" href="/statistics">Gå till</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
-
-<style>
-    .admin-buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .admin-link {
-        padding: 0.75rem 1.5rem;
-        background-color: #007bff;
-        color: white;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .admin-link:hover {
-        background-color: #0056b3;
-    }
-</style>

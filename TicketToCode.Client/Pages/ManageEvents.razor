@@ -1,16 +1,16 @@
 ﻿@page "/manageevents"
-@inject EventService EventService
 @inject AuthService AuthService
+@inject EventService EventService
 
 <h2 class="text-center my-4">Hantera Evenemang</h2>
 
 @if (AuthService.CurrentUser?.Role != "Admin")
 {
-    <p>Endast administratörer har tillgång till denna sida.</p>
+    <p class="text-danger">Du har inte behörighet att se denna sida.</p>
 }
 else
 {
-    <div class="container mt-4">
+    <div class="container mb-5">
         <h4>@(isEditMode ? "Redigera Evenemang" : "Skapa Evenemang")</h4>
         <div class="row">
             <div class="col-md-6">
@@ -21,16 +21,23 @@ else
                     <textarea class="form-control" @bind="eventModel.Description" placeholder="Beskrivning"></textarea>
                 </div>
                 <div class="mb-3">
+                    <select class="form-select" @bind="eventModel.Type">
+                        <option value="Workshop">Workshop</option>
+                        <option value="Meetup">Meetup</option>
+                        <option value="Lecture">Lecture</option>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <input class="form-control" type="datetime-local" @bind="eventModel.Start" />
                 </div>
                 <div class="mb-3">
                     <input class="form-control" type="datetime-local" @bind="eventModel.End" />
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="number" @bind="eventModel.MaxAttendees" placeholder="Max antal" />
+                    <input class="form-control" type="number" @bind="eventModel.MaxAttendees" placeholder="Max antal deltagare" />
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="number" @bind="eventModel.NumberOfTickets" placeholder="Biljetter" />
+                    <input class="form-control" type="number" @bind="eventModel.NumberOfTickets" placeholder="Antal biljetter" />
                 </div>
                 <button class="btn btn-success me-2" @onclick="SaveEvent">Spara</button>
                 @if (isEditMode)
@@ -41,23 +48,40 @@ else
         </div>
     </div>
 
-
-    <hr />
-
-    <h4>Alla Evenemang</h4>
-
-    <div class="event-grid">
-        @foreach (var ev in events)
-        {
-            <div class="event-card">
-                <h5>@ev.Name</h5>
-                <p>@ev.Description</p>
-                <p><strong>Start:</strong> @ev.Start</p>
-                <p><strong>Slut:</strong> @ev.End</p>
-                <button @onclick="() => EditEvent(ev)" class="form-button small">Redigera</button>
-                <button @onclick="() => DeleteEvent(ev.Id)" class="form-button danger small">Ta bort</button>
-            </div>
-        }
+    <div class="table-responsive">
+        <table class="table table-striped table-hover bg-white rounded shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Namn</th>
+                    <th>Typ</th>
+                    <th>Start</th>
+                    <th>Slut</th>
+                    <th>Deltagare</th>
+                    <th>Biljetter</th>
+                    <th>Redigera</th>
+                    <th>Ta bort</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in events)
+                {
+                    <tr>
+                        <td>@ev.Name</td>
+                        <td>@ev.Type</td>
+                        <td>@ev.Start.ToString("g")</td>
+                        <td>@ev.End.ToString("g")</td>
+                        <td>@ev.MaxAttendees</td>
+                        <td>@ev.NumberOfTickets</td>
+                        <td>
+                            <button class="btn btn-outline-primary btn-sm" @onclick="() => EditEvent(ev)">Redigera</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-danger btn-sm" @onclick="() => DeleteEvent(ev.Id)">Ta bort</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
 
@@ -67,11 +91,6 @@ else
     bool isEditMode = false;
 
     protected override async Task OnInitializedAsync()
-    {
-        await LoadEvents();
-    }
-
-    async Task LoadEvents()
     {
         events = await EventService.GetAllEvents();
     }
@@ -87,7 +106,7 @@ else
             await EventService.CreateEvent(eventModel);
         }
 
-        await LoadEvents();
+        events = await EventService.GetAllEvents();
         eventModel = new();
         isEditMode = false;
     }
@@ -99,11 +118,11 @@ else
                 Id = ev.Id,
                 Name = ev.Name,
                 Description = ev.Description,
+                Type = ev.Type,
                 Start = ev.Start,
                 End = ev.End,
                 MaxAttendees = ev.MaxAttendees,
-                NumberOfTickets = ev.NumberOfTickets,
-                Type = ev.Type
+                NumberOfTickets = ev.NumberOfTickets
             };
         isEditMode = true;
     }
@@ -117,6 +136,6 @@ else
     async Task DeleteEvent(int id)
     {
         await EventService.DeleteEvent(id);
-        await LoadEvents();
+        events = await EventService.GetAllEvents();
     }
 }

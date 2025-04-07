@@ -3,6 +3,7 @@
 
 <nav class="nav-container">
     <a href="/events" class="nav-link">Evenemang</a>
+
     @if (AuthService.CurrentUser is not null)
     {
         <a href="/mybookings" class="nav-link">Mina bokningar</a>

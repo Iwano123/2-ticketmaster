@@ -1,42 +1,42 @@
 ﻿@page "/statistics"
-@inject StatisticsService StatisticsService
 @inject AuthService AuthService
+@inject HttpClient Http
 
 <h2 class="text-center my-4">Statistik</h2>
 
 @if (AuthService.CurrentUser?.Role != "Admin")
 {
-    <p>Du har inte behörighet att se denna sida.</p>
+    <p class="text-danger">Du har inte behörighet att se denna sida.</p>
 }
-else if (stats == null)
+else if (stats is null)
 {
     <p>Laddar statistik...</p>
 }
 else
 {
-    <div class="container mt-4">
+    <div class="container">
         <div class="row text-center">
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">Evenemang</h5>
-                        <p class="card-text display-6">@stats.TotalEvents</p>
+                        <h5 class="card-title">Antal evenemang</h5>
+                        <p class="display-6">@stats.TotalEvents</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">Bokningar</h5>
-                        <p class="card-text display-6">@stats.TotalBookings</p>
+                        <h5 class="card-title">Antal bokningar</h5>
+                        <p class="display-6">@stats.TotalBookings</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="card-title">Användare</h5>
-                        <p class="card-text display-6">@stats.TotalUsers</p>
+                        <h5 class="card-title">Antal användare</h5>
+                        <p class="display-6">@stats.TotalUsers</p>
                     </div>
                 </div>
             </div>
@@ -44,12 +44,18 @@ else
     </div>
 }
 
-
 @code {
     StatisticsDto? stats;
 
     protected override async Task OnInitializedAsync()
     {
-        stats = await StatisticsService.GetStats();
+        stats = await Http.GetFromJsonAsync<StatisticsDto>("/statistics");
+    }
+
+    public class StatisticsDto
+    {
+        public int TotalEvents { get; set; }
+        public int TotalBookings { get; set; }
+        public int TotalUsers { get; set; }
     }
 }

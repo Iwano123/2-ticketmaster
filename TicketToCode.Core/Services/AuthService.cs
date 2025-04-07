@@ -9,10 +9,6 @@ public interface IAuthService
     UserDto? Register(string username, string password);
 }
 
-// TODO: Implement better auth
-/// <summary>
-/// Simple auth service to enable registering and login in, should be replaced before release
-/// </summary>
 public class AuthService : IAuthService
 {
     private readonly IDatabase _database;

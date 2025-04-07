@@ -6,66 +6,72 @@
 
 @if (AuthService.CurrentUser?.Role != "Admin")
 {
-    <p>Du har inte behörighet att se denna sida.</p>
+    <p class="text-danger">Du har inte behörighet att se denna sida.</p>
+}
+else if (users.Count == 0)
+{
+    <p>Laddar användare...</p>
 }
 else
 {
-    <table class="user-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Användarnamn</th>
-                <th>Roll</th>
-                <th>Redigera</th>
-                <th>Ta bort</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in users)
-            {
+    <div class="table-responsive">
+        <table class="table table-hover bg-white rounded shadow-sm">
+            <thead class="table-light">
                 <tr>
-                    <td>@user.Id</td>
-                    <td>
-                        @if (editUser?.Id == user.Id)
-                        {
-                            <input @bind="editUser.Username" />
-                        }
-                        else
-                        {
-                            @user.Username
-                        }
-                    </td>
-                    <td>
-                        @if (editUser?.Id == user.Id)
-                        {
-                            <select @bind="editUser.Role">
-                                <option value="User">User</option>
-                                <option value="Admin">Admin</option>
-                            </select>
-                        }
-                        else
-                        {
-                            @user.Role
-                        }
-                    </td>
-                    <td>
-                        @if (editUser?.Id == user.Id)
-                        {
-                            <button @onclick="SaveEdit">Spara</button>
-                            <button @onclick="CancelEdit">Avbryt</button>
-                        }
-                        else
-                        {
-                            <button @onclick="() => EditUser(user)">Redigera</button>
-                        }
-                    </td>
-                    <td>
-                        <button @onclick="() => DeleteUser(user.Id)">Ta bort</button>
-                    </td>
+                    <th>ID</th>
+                    <th>Användarnamn</th>
+                    <th>Roll</th>
+                    <th>Redigera</th>
+                    <th>Ta bort</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>
+                            @if (editUser?.Id == user.Id)
+                            {
+                                <input class="form-control" @bind="editUser.Username" />
+                            }
+                            else
+                            {
+                                @user.Username
+                            }
+                        </td>
+                        <td>
+                            @if (editUser?.Id == user.Id)
+                            {
+                                <select class="form-select" @bind="editUser.Role">
+                                    <option value="User">User</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            }
+                            else
+                            {
+                                @user.Role
+                            }
+                        </td>
+                        <td>
+                            @if (editUser?.Id == user.Id)
+                            {
+                                <button class="btn btn-success btn-sm me-2" @onclick="SaveEdit">Spara</button>
+                                <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Avbryt</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-outline-primary btn-sm" @onclick="() => EditUser(user)">Redigera</button>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-danger btn-sm" @onclick="() => DeleteUser(user.Id)">Ta bort</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
@@ -76,7 +82,6 @@ else
     {
         users = await UserService.GetAllUsers();
     }
-
 
     void EditUser(UserDto user)
     {

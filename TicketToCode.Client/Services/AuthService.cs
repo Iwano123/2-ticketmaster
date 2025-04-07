@@ -25,6 +25,7 @@ public class AuthService
         return false;
     }
 
+
     public async Task<bool> Register(string username, string password)
     {
         var response = await _http.PostAsJsonAsync("/auth/register", new RegisterRequest(username, password));

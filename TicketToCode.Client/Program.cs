@@ -12,7 +12,7 @@ builder.Services.AddScoped(sp => new HttpClient
     BaseAddress = new Uri("https://localhost:7206") 
 });
 
-// Registrera våra egna services
+// Registrera vï¿½ra egna services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<BookingService>();

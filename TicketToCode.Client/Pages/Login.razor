@@ -16,6 +16,13 @@
             </div>
             <button @onclick="LoginUser" class="btn btn-primary w-100">Logga in</button>
             <p class="text-danger mt-2">@Message</p>
+            @if (AuthService.CurrentUser != null)
+            {
+                <div class="alert alert-info mt-3">
+                    <p>Inloggad som: @AuthService.CurrentUser.Username</p>
+                    <p>Roll: @AuthService.CurrentUser.Role</p>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -27,10 +34,27 @@
 
     async Task LoginUser()
     {
+        Message = "";
         var success = await AuthService.Login(Username, Password);
         if (success)
         {
-            Navigation.NavigateTo("/events");
+            if (AuthService.CurrentUser != null)
+            {
+                Message = $"Inloggning lyckades! Roll: {AuthService.CurrentUser.Role}";
+                // Navigera beroende på roll + tvinga layout att laddas om
+                if (AuthService.CurrentUser.Role == "Admin")
+                {
+                    Navigation.NavigateTo("/admin", forceLoad: true);
+                }
+                else
+                {
+                    Navigation.NavigateTo("/events", forceLoad: true);
+                }
+            }
+            else
+            {
+                Message = "Inloggning misslyckades - ingen användare hittades";
+            }
         }
         else
         {

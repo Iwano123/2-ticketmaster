@@ -20,19 +20,36 @@ public class AuthService : IAuthService
 
     public UserDto? Login(string username, string password)
     {
-        var user = _database.Users.FirstOrDefault(u => u.Username == username);
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        Console.WriteLine($"Attempting login for user: {username}");
+        Console.WriteLine($"Total users in database: {_database.Users.Count}");
+        Console.WriteLine($"Users in database: {string.Join(", ", _database.Users.Select(u => $"{u.Username}({u.Role})"))}");
+
+        var user = _database.Users.FirstOrDefault(u => 
+            u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            
+        if (user == null)
         {
+            Console.WriteLine($"User {username} not found in database");
             return null;
         }
 
+        Console.WriteLine($"Found user: {user.Username} with role: {user.Role}");
+        
+        if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        {
+            Console.WriteLine($"Password verification failed for user {username}");
+            return null;
+        }
+
+        Console.WriteLine($"Login successful for user {username} with role {user.Role}");
         return new UserDto(user.Id, user.Username, user.Role);
     }
 
     public UserDto? Register(string username, string password)
     {
-        if (_database.Users.Any(u => u.Username == username))
+        if (_database.Users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
         {
+            Console.WriteLine($"Registration failed - username {username} already exists");
             return null;
         }
 
@@ -40,7 +57,7 @@ public class AuthService : IAuthService
         var user = new User(username, hashedPwd);
         _database.Users.Add(user);
 
+        Console.WriteLine($"New user registered: {username} with role {user.Role}");
         return new UserDto(user.Id, user.Username, user.Role);
     }
-
 }

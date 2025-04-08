@@ -24,9 +24,9 @@
 </nav>
 
 @code {
-    void Logout()
+    async Task Logout()
     {
-        AuthService.Logout();
+        await AuthService.Logout();
         Nav.NavigateTo("/login", forceLoad: true);
     }
 }

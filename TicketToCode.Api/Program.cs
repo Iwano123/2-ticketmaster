@@ -4,36 +4,36 @@ using TicketToCode.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Lägg till Swagger/OpenAPI
+// Lï¿½gg till Swagger/OpenAPI
 builder.Services.AddOpenApi();
 
-//  Lägg till CORS-policy
+//  Lï¿½gg till CORS-policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7057") // <-- Exakt adress där Blazor kör
+        policy.WithOrigins("https://localhost:7057") // <-- Exakt adress dï¿½r Blazor kï¿½r
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
-        // Endast om du använder cookies/credentials. 
-        // Om du INTE använder cookies kan du hoppa över .AllowCredentials().
+        // Endast om du anvï¿½nder cookies/credentials. 
+        // Om du INTE anvï¿½nder cookies kan du hoppa ï¿½ver .AllowCredentials().
     });
 });
 
-//  Registrera tjänster
+//  Registrera tjï¿½nster
 builder.Services.AddSingleton<IDatabase, Database>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-//  Om du använder cookie-autentisering:
+//  Om du anvï¿½nder cookie-autentisering:
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
         options.Cookie.Name = "auth";
         options.Cookie.HttpOnly = true;
-        // Vid cross-origin med cookies krävs SameSite=None
+        // Vid cross-origin med cookies krï¿½vs SameSite=None
         options.Cookie.SameSite = SameSiteMode.None;
-        // Om du vill att cookies endast ska skickas över https
+        // Om du vill att cookies endast ska skickas ï¿½ver https
         // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
@@ -55,7 +55,7 @@ if (app.Environment.IsDevelopment())
 //  Https-redirect
 app.UseHttpsRedirection();
 
-// Använd CORS innan authentication/authorization
+// AnvÃ¤nd CORS innan authentication/authorization
 app.UseCors("AllowBlazorClient");
 
 //  Authentication + Authorization
@@ -67,7 +67,7 @@ app.MapEndpoints<Program>();
 
 app.MapBookingEndpoints();
 app.MapUserEndpoints();
-
+app.MapEventEndpoints();
 
 app.MapGet("/secure", [Microsoft.AspNetCore.Authorization.Authorize] () => "Secure endpoint!");
 

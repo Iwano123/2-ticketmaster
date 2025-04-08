@@ -7,27 +7,47 @@
 @using TicketToCode.Client.Services
 @using Microsoft.AspNetCore.Components
 
-
-<h3 class="text-center my-4">Evenemangsdetaljer</h3>
+<h3 class="text-center my-4 text-white">Evenemangsdetaljer</h3>
 
 @if (eventData == null)
 {
-    <p>Laddar...</p>
+    <p class="text-white">Laddar...</p>
 }
 else
 {
-    <div class="event-card large">
+    <div class="event-card">
         <h4>@eventData.Name</h4>
         <p>@eventData.Description</p>
-        <p><strong>Start:</strong> @eventData.Start</p>
-        <p><strong>Slut:</strong> @eventData.End</p>
+        <p><strong>Start:</strong> @eventData.Start.ToString("yyyy-MM-dd HH:mm")</p>
+        <p><strong>Slut:</strong> @eventData.End.ToString("yyyy-MM-dd HH:mm")</p>
         <p><strong>Platser kvar:</strong> @eventData.NumberOfTickets</p>
 
         @if (AuthService.CurrentUser is not null)
         {
-            <input type="number" min="1" @bind="NumberOfTickets" />
-            <button @onclick="Book" class="form-button">Boka biljetter</button>
-            <p>@Message</p>
+            @if (eventData.NumberOfTickets > 0)
+            {
+                <div class="booking-form">
+                    <input type="number" min="1" max="@eventData.NumberOfTickets" @bind="NumberOfTickets" />
+                    <button @onclick="Book" class="form-button" disabled="@isBooking">
+                        @if (isBooking)
+                        {
+                            <span>Bokar...</span>
+                        }
+                        else
+                        {
+                            <span>Boka biljetter</span>
+                        }
+                    </button>
+                </div>
+            }
+            else
+            {
+                <p class="text-warning">Tyvärr är alla biljetter slut!</p>
+            }
+            @if (!string.IsNullOrEmpty(Message))
+            {
+                <p class="@(BookingSuccess ? "success-message" : "error-message")">@Message</p>
+            }
         }
         else
         {
@@ -41,17 +61,53 @@ else
     EventDto? eventData;
     int NumberOfTickets = 1;
     string Message = "";
+    bool BookingSuccess = false;
+    bool isBooking = false;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadEventData();
+    }
+
+    private async Task LoadEventData()
+    {
         eventData = await EventService.GetEvent(Id);
+        if (eventData != null && NumberOfTickets > eventData.NumberOfTickets)
+        {
+            NumberOfTickets = eventData.NumberOfTickets;
+        }
     }
 
     async Task Book()
     {
-        if (AuthService.CurrentUser == null) return;
+        if (AuthService.CurrentUser == null || eventData == null) return;
+        if (NumberOfTickets <= 0 || NumberOfTickets > eventData.NumberOfTickets)
+        {
+            Message = "Ogiltigt antal biljetter.";
+            BookingSuccess = false;
+            return;
+        }
 
-        var success = await BookingService.BookTickets(new BookingRequest(Id, AuthService.CurrentUser.Id, NumberOfTickets));
-        Message = success ? "Bokning lyckades!" : "Bokning misslyckades!";
+        isBooking = true;
+        try
+        {
+            var success = await BookingService.BookTickets(new BookingRequest(Id, AuthService.CurrentUser.Id, NumberOfTickets));
+            if (success)
+            {
+                Message = "Bokning lyckades!";
+                BookingSuccess = true;
+                await LoadEventData(); // Uppdatera biljettantalet
+                NumberOfTickets = 1; // Återställ antal biljetter
+            }
+            else
+            {
+                Message = "Bokning misslyckades!";
+                BookingSuccess = false;
+            }
+        }
+        finally
+        {
+            isBooking = false;
+        }
     }
 }

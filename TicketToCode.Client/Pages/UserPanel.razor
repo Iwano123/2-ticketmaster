@@ -1,0 +1,52 @@
+@page "/userpanel"
+@inject AuthService AuthService
+@inject BookingService BookingService
+@inject NavigationManager Navigation
+
+@if (AuthService.CurrentUser == null)
+{
+    <p class="text-danger">Du måste vara inloggad för att se denna sida.</p>
+}
+else
+{
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Min Profil</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Mina Bokningar</h5>
+                        <p class="text-muted">Se och hantera dina bokningar</p>
+                        <a class="btn btn-outline-primary w-100" href="/mybookings">Gå till</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Evenemang</h5>
+                        <p class="text-muted">Bläddra bland tillgängliga evenemang</p>
+                        <a class="btn btn-outline-primary w-100" href="/events">Gå till</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Min Profil</h5>
+                        <p>Inloggad som: @AuthService.CurrentUser.Username</p>
+                        <button class="btn btn-outline-danger w-100" @onclick="Logout">Logga ut</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    async Task Logout()
+    {
+        await AuthService.Logout();
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+} 

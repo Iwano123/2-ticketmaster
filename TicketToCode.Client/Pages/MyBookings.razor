@@ -1,31 +1,53 @@
 ﻿@page "/mybookings"
-@inject BookingService BookingService
 @inject AuthService AuthService
+@inject BookingService BookingService
 @using TicketToCode.Client.Models
 @using TicketToCode.Client.Services
 
-<h3 class="text-center my-4">Mina bokningar</h3>
+<h2 class="text-center my-4">Mina Bokningar</h2>
 
-@if (bookings == null)
+@if (AuthService.CurrentUser == null)
 {
-    <p>Laddar...</p>
+    <p class="text-danger">Du måste vara inloggad för att se denna sida.</p>
+}
+else if (bookings == null)
+{
+    <p>Laddar bokningar...</p>
 }
 else if (!bookings.Any())
 {
-    <p>Du har inga bokningar ännu.</p>
+    <p>Du har inga bokningar än.</p>
 }
 else
 {
-    <div class="event-grid">
-        @foreach (var booking in bookings)
-        {
-            <div class="event-card">
-                <p><strong>Event ID:</strong> @booking.EventId</p>
-                <p><strong>Biljetter:</strong> @booking.NumberOfTickets</p>
-                <p><strong>Bokat:</strong> @booking.BookingDate</p>
-                <button @onclick="() => Cancel(booking.Id)" class="form-button">Avboka</button>
-            </div>
-        }
+    <div class="table-responsive">
+        <table class="table table-hover bg-white rounded shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Boknings-ID</th>
+                    <th>Evenemang</th>
+                    <th>Antal Biljetter</th>
+                    <th>Datum</th>
+                    <th>Åtgärder</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in bookings)
+                {
+                    <tr>
+                        <td>@booking.Id</td>
+                        <td>@booking.EventId</td>
+                        <td>@booking.NumberOfTickets</td>
+                        <td>@booking.BookingDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" @onclick="() => CancelBooking(booking.Id)">
+                                Avboka
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
 
@@ -40,12 +62,11 @@ else
         }
     }
 
-    async Task Cancel(int id)
+    async Task CancelBooking(int bookingId)
     {
-        var result = await BookingService.CancelBooking(id);
-        if (result)
+        if (await BookingService.CancelBooking(bookingId))
         {
-            bookings = await BookingService.GetUserBookings(AuthService.CurrentUser!.Id);
+            bookings = bookings?.Where(b => b.Id != bookingId).ToList();
         }
     }
 }

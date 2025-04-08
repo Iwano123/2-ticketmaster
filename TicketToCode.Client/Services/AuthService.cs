@@ -11,6 +11,7 @@ public class AuthService
     private const string StorageKey = "auth_user";
 
     public UserDto? CurrentUser { get; private set; }
+    public event Action? OnAuthenticationStateChanged;
 
     public AuthService(HttpClient http, IJSRuntime jsRuntime)
     {
@@ -27,6 +28,7 @@ public class AuthService
             if (!string.IsNullOrEmpty(storedUser))
             {
                 CurrentUser = System.Text.Json.JsonSerializer.Deserialize<UserDto>(storedUser);
+                OnAuthenticationStateChanged?.Invoke();
             }
         }
         catch
@@ -37,26 +39,48 @@ public class AuthService
 
     public async Task<bool> Login(string username, string password)
     {
-        var response = await _http.PostAsJsonAsync("/auth/login", new LoginRequest(username, password));
-        if (response.IsSuccessStatusCode)
+        try
         {
-            CurrentUser = await response.Content.ReadFromJsonAsync<UserDto>();
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, 
-                System.Text.Json.JsonSerializer.Serialize(CurrentUser));
-            return true;
+            var response = await _http.PostAsJsonAsync("/auth/login", new LoginRequest(username, password));
+            if (response.IsSuccessStatusCode)
+            {
+                CurrentUser = await response.Content.ReadFromJsonAsync<UserDto>();
+                if (CurrentUser != null)
+                {
+                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, 
+                        System.Text.Json.JsonSerializer.Serialize(CurrentUser));
+                    OnAuthenticationStateChanged?.Invoke();
+                }
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login error: {ex.Message}");
         }
         return false;
     }
 
     public async Task<bool> Register(string username, string password)
     {
-        var response = await _http.PostAsJsonAsync("/auth/register", new RegisterRequest(username, password));
-        if (response.IsSuccessStatusCode)
+        try
         {
-            CurrentUser = await response.Content.ReadFromJsonAsync<UserDto>();
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, 
-                System.Text.Json.JsonSerializer.Serialize(CurrentUser));
-            return true;
+            var response = await _http.PostAsJsonAsync("/auth/register", new RegisterRequest(username, password));
+            if (response.IsSuccessStatusCode)
+            {
+                CurrentUser = await response.Content.ReadFromJsonAsync<UserDto>();
+                if (CurrentUser != null)
+                {
+                    await _jsRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, 
+                        System.Text.Json.JsonSerializer.Serialize(CurrentUser));
+                    OnAuthenticationStateChanged?.Invoke();
+                }
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Registration error: {ex.Message}");
         }
         return false;
     }
@@ -65,5 +89,6 @@ public class AuthService
     {
         CurrentUser = null;
         await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
+        OnAuthenticationStateChanged?.Invoke();
     }
 }

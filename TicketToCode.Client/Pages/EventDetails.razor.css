@@ -1,0 +1,54 @@
+.event-card {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 1rem;
+    color: white;
+}
+
+.event-card h4 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.event-card p {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.event-card a {
+    color: #17a2b8;
+}
+
+.event-card input[type="number"] {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    padding: 0.5rem;
+    margin-right: 1rem;
+    border-radius: 4px;
+    color: black;
+}
+
+.form-button {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-button:hover {
+    background-color: #138496;
+}
+
+.success-message {
+    color: #28a745;
+    margin-top: 1rem;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 1rem;
+} 

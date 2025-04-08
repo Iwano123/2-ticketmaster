@@ -1,18 +1,21 @@
 ﻿@inject AuthService AuthService
 @inject NavigationManager Nav
+@implements IDisposable
 
 <nav class="nav-container">
     <a href="/events" class="nav-link">Evenemang</a>
 
     @if (AuthService.CurrentUser is not null)
     {
-        <a href="/mybookings" class="nav-link">Mina bokningar</a>
-
         @if (AuthService.CurrentUser.Role == "Admin")
         {
             <a href="/admin" class="nav-link">Adminpanel</a>
         }
-
+        else
+        {
+            <a href="/userpanel" class="nav-link">Min Profil</a>
+        }
+        <a href="/mybookings" class="nav-link">Mina Bokningar</a>
         <span class="nav-user">Hej, @AuthService.CurrentUser.Username!</span>
         <button @onclick="Logout" class="nav-button">Logga ut</button>
     }
@@ -24,6 +27,16 @@
 </nav>
 
 @code {
+    protected override void OnInitialized()
+    {
+        AuthService.OnAuthenticationStateChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthenticationStateChanged -= StateHasChanged;
+    }
+
     async Task Logout()
     {
         await AuthService.Logout();

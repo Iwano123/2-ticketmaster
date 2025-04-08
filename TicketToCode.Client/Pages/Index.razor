@@ -1,0 +1,20 @@
+@page "/"
+@inject NavigationManager NavigationManager
+
+<div class="logo-container">
+    <div class="logo">
+        <span class="ticket">2$</span>
+        <span class="master">ticketmaster</span>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Automatiskt navigera till events-sidan efter 3 sekunder
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            NavigationManager.NavigateTo("/events");
+        });
+    }
+}

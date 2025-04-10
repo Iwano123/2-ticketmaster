@@ -85,6 +85,7 @@ public class Database : IDatabase
             evt.StartTime = updatedEvent.StartTime;
             evt.EndTime = updatedEvent.EndTime;
             evt.MaxAttendees = updatedEvent.MaxAttendees;
+            evt.AvailableTickets = updatedEvent.AvailableTickets;
         }
     }
 

@@ -12,12 +12,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7057") // <-- Exakt adress d�r Blazor k�r
+        policy.WithOrigins("https://localhost:7057") // <-- Exakt adress där Blazor kör
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
-        // Endast om du anv�nder cookies/credentials. 
-        // Om du INTE anv�nder cookies kan du hoppa �ver .AllowCredentials().
+        // Endast om du använder cookies/credentials. 
+        // Om du INTE använder cookies kan du hoppa �ver .AllowCredentials().
     });
 });
 
@@ -31,9 +31,9 @@ builder.Services.AddAuthentication("Cookies")
     {
         options.Cookie.Name = "auth";
         options.Cookie.HttpOnly = true;
-        // Vid cross-origin med cookies kr�vs SameSite=None
+        // Vid cross-origin med cookies krävs SameSite=None
         options.Cookie.SameSite = SameSiteMode.None;
-        // Om du vill att cookies endast ska skickas �ver https
+        // Om du vill att cookies endast ska skickas över https
         // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 

@@ -5,7 +5,7 @@
     --success-color: #22c55e;
     --danger-color: #ef4444;
     --background-color: rgba(255, 255, 255, 0.95);
-    --text-color: #1e293b;
+    --text-color: white;
     --border-radius: 0.5rem;
     --transition-speed: 0.3s;
 }

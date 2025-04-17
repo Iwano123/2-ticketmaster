@@ -12,7 +12,7 @@ public static class EventEndpoints
     {
         app.MapPut("/events/{id}", (int id, EventUpdateRequest updatedEvent, IDatabase db) =>
         {
-            var evt = db.GetEvent(id);
+            var evt = db.Events.GetEvent(id);
             if (evt == null) return Results.NotFound();
 
             // Map from request to database model
@@ -28,16 +28,16 @@ public static class EventEndpoints
                 AvailableTickets = updatedEvent.NumberOfTickets
             };
 
-            db.UpdateEvent(eventToUpdate);
+            db.Events.UpdateEvent(eventToUpdate);
             return Results.NoContent();
         }).WithSummary("Update an event");
 
         app.MapDelete("/events/{id}", (int id, IDatabase db) =>
         {
-            var evt = db.GetEvent(id);
+            var evt = db.Events.GetEvent(id);
             if (evt == null) return Results.NotFound();
 
-            db.DeleteEvent(id);
+            db.Events.DeleteEvent(id);
             return Results.NoContent();
         }).WithSummary("Delete an event");
     }

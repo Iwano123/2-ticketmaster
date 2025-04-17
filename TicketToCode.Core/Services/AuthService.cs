@@ -21,11 +21,11 @@ public class AuthService : IAuthService
     public UserDto? Login(string username, string password)
     {
         Console.WriteLine($"Attempting login for user: {username}");
-        Console.WriteLine($"Total users in database: {_database.Users.Count}");
-        Console.WriteLine($"Users in database: {string.Join(", ", _database.Users.Select(u => $"{u.Username}({u.Role})"))}");
+        var allUsers = _database.Users.GetAllUsers();
+        Console.WriteLine($"Total users in database: {allUsers.Count}");
+        Console.WriteLine($"Users in database: {string.Join(", ", allUsers.Select(u => $"{u.Username}({u.Role})"))}");
 
-        var user = _database.Users.FirstOrDefault(u => 
-            u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+        var user = _database.Users.GetUserByUsername(username);
             
         if (user == null)
         {
@@ -47,7 +47,8 @@ public class AuthService : IAuthService
 
     public UserDto? Register(string username, string password)
     {
-        if (_database.Users.Any(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+        var existingUser = _database.Users.GetUserByUsername(username);
+        if (existingUser != null)
         {
             Console.WriteLine($"Registration failed - username {username} already exists");
             return null;
@@ -55,7 +56,7 @@ public class AuthService : IAuthService
 
         var hashedPwd = BCrypt.Net.BCrypt.HashPassword(password);
         var user = new User(username, hashedPwd);
-        _database.Users.Add(user);
+        _database.Users.AddUser(user);
 
         Console.WriteLine($"New user registered: {username} with role {user.Role}");
         return new UserDto(user.Id, user.Username, user.Role);

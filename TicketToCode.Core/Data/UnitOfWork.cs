@@ -1,26 +1,21 @@
-﻿using TicketToCode.Core.Models;
+using TicketToCode.Core.Models;
 
 namespace TicketToCode.Core.Data;
 
-public interface IDatabase
-{
-    IEventRepository Events { get; }
-    IBookingRepository Bookings { get; }
-    IUserRepository Users { get; }
-    (int TotalEvents, int TotalBookings, int TotalUsers) GetStatistics();
-}
-
-public class Database : IDatabase
+public class UnitOfWork : IDisposable
 {
     private readonly IEventRepository _eventRepository;
     private readonly IBookingRepository _bookingRepository;
     private readonly IUserRepository _userRepository;
 
-    public Database()
+    public UnitOfWork(
+        IEventRepository eventRepository,
+        IBookingRepository bookingRepository,
+        IUserRepository userRepository)
     {
-        _eventRepository = new Repositories.EventRepository();
-        _bookingRepository = new Repositories.BookingRepository(_eventRepository);
-        _userRepository = new Repositories.UserRepository();
+        _eventRepository = eventRepository;
+        _bookingRepository = bookingRepository;
+        _userRepository = userRepository;
     }
 
     public IEventRepository Events => _eventRepository;
@@ -35,4 +30,9 @@ public class Database : IDatabase
             _userRepository.GetAllUsers().Count
         );
     }
-}
+
+    public void Dispose()
+    {
+        // Clean up resources if needed
+    }
+} 

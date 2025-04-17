@@ -21,7 +21,7 @@ public class GetAllEvents : IEndpoint
     //Logic
     private static List<Response> Handle(IDatabase db)
     {
-        return db.Events
+        return db.Events.GetAllEvents()
             .Select(item => new Response(
                 Id: item.Id,
                 Name: item.Name,

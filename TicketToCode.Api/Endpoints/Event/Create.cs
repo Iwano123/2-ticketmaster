@@ -32,7 +32,7 @@ public class CreateEvent : IEndpoint
             AvailableTickets = request.NumberOfTickets
         };
 
-        db.AddEvent(ev); 
+        db.Events.AddEvent(ev); 
 
         return TypedResults.Ok(new Response(ev.Id)); 
     }

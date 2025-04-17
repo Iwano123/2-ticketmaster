@@ -8,7 +8,7 @@ public class GetEventBookings : IEndpoint
 
     private static IResult Handle(int id, IDatabase db)
     {
-        var bookings = db.GetEventBookings(id);
+        var bookings = db.Bookings.GetEventBookings(id);
         return Results.Ok(bookings);
     }
 }

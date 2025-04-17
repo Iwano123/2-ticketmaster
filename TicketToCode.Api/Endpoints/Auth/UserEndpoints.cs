@@ -10,31 +10,31 @@ public static class UserEndpoints
     {
         app.MapGet("/users", (IDatabase db) =>
         {
-            var users = db.GetAllUsers();
+            var users = db.Users.GetAllUsers();
             return Results.Ok(users);
         }).WithSummary("Get all users");
 
         app.MapGet("/users/{id}", (int id, IDatabase db) =>
         {
-            var user = db.GetUser(id);
+            var user = db.Users.GetUser(id);
             return user != null ? Results.Ok(user) : Results.NotFound();
         }).WithSummary("Get user by ID");
 
         app.MapPut("/users/{id}", (int id, User updatedUser, IDatabase db) =>
         {
-            var user = db.GetUser(id);
+            var user = db.Users.GetUser(id);
             if (user == null) return Results.NotFound();
 
-            db.UpdateUser(updatedUser);
+            db.Users.UpdateUser(updatedUser);
             return Results.NoContent();
         }).WithSummary("Update a user");
 
         app.MapDelete("/users/{id}", (int id, IDatabase db) =>
         {
-            var user = db.GetUser(id);
+            var user = db.Users.GetUser(id);
             if (user == null) return Results.NotFound();
 
-            db.DeleteUser(id);
+            db.Users.DeleteUser(id);
             return Results.NoContent();
         }).WithSummary("Delete a user");
     }

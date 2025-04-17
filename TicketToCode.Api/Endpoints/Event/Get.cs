@@ -20,11 +20,11 @@ public class GetEvent : IEndpoint
         int NumberOfTickets
     );
 
-
     //Logic
     private static Response Handle([AsParameters] Request request, IDatabase db)
     {
-        var ev = db.Events.Find(ev => ev.Id == request.Id);
+        var ev = db.Events.GetEvent(request.Id);
+        if (ev == null) throw new Exception("Event not found");
 
         // map ev to response dto
         var response = new Response(
